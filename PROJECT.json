@@ -1,0 +1,88 @@
+{
+  "slug": "pulse",
+  "title": "Pulse: live observability and incident console",
+  "tagline": "A Datadog-style console with a hand-built Canvas chart engine and query language, running on a simulated backend in a Web Worker.",
+  "summary": "I built a browser-only observability console: live-streaming metrics, a 240k-line log explorer with its own query language, alert rules, and a full incident workflow. Everything runs on a seeded simulator in a Web Worker, and a guided mission lets visitors investigate a planted outage end to end. I wrote the chart renderer and the query engine from scratch, with no charting or UI libraries.",
+  "role": "Design and engineering, solo",
+  "highlights": [
+    "I hand-built a Canvas 2D time-series renderer: min/max pixel-bucket decimation that provably preserves spikes, a two-layer canvas, DPR-correct sizing, off-screen skipping and a single rAF loop that only runs when something is dirty.",
+    "I implemented linked interaction across charts: brush-to-zoom, shift-drag pan, cursor-anchored wheel zoom, keyboard time navigation, a crosshair and tooltip synchronised across every chart, deploy markers and threshold lines.",
+    "I wrote a log query language from scratch (tokenizer, recursive-descent parser, compiler to typed-column predicates) with positioned syntax and semantic errors, syntax highlighting, autocomplete, saved queries and filter chips, and a hand-windowed list over 240k rows.",
+    "I put the simulation in a Web Worker behind a typed message protocol: seeded generators for 64 metric series and 240k logs, injected incidents (bad deploy, error burst, memory leak), live alert evaluation, and rollbacks that make the metrics actually recover.",
+    "I built the incident workflow: declare from an alert, auto-attached timeline of alerts, deploys and notes, status steps, runbook, rollback, and a post-mortem summary generated from measured data.",
+    "I built a self-checking guided mission whose steps are detected from real application state, and verified it with 30 unit tests plus a 35-check real-Chrome end-to-end script driven by mouse and keyboard."
+  ],
+  "stack": [
+    "React 18",
+    "TypeScript (strict)",
+    "Vite",
+    "Canvas 2D",
+    "Web Workers",
+    "Vitest",
+    "playwright-core"
+  ],
+  "resumeLinks": [],
+  "run": "npm install && npm run dev",
+  "port": 5185,
+  "screenshots": [
+    {
+      "file": "screenshots/01-overview-anomaly.png",
+      "caption": "First screen: live service health, topology, linked charts and a visible latency anomaly, with the guided mission open."
+    },
+    {
+      "file": "screenshots/02-brushed-synced-crosshair.png",
+      "caption": "After brush-zooming the spike: every chart shares the range and shows a synchronised crosshair tooltip."
+    },
+    {
+      "file": "screenshots/04-log-explorer.png",
+      "caption": "Log explorer: highlighted query, filter chip, linked brushable histogram, virtualised rows and a trace detail."
+    },
+    {
+      "file": "screenshots/06-alert-rule-editor.png",
+      "caption": "Alert rule editor with a live preview shading where the rule would have fired."
+    },
+    {
+      "file": "screenshots/07-incident-timeline.png",
+      "caption": "Incident page: status steps, runbook, and a timeline of deploy, alerts, rollback and notes."
+    },
+    {
+      "file": "screenshots/08-service-map-hover.png",
+      "caption": "Service map with a hovered dependency highlighted; the mission is complete."
+    },
+    {
+      "file": "screenshots/05-mission-partial.png",
+      "caption": "Mission checklist partway through, steps ticking off from real state."
+    },
+    {
+      "file": "screenshots/10-dark-overview.png",
+      "caption": "Dark theme overview."
+    }
+  ],
+  "measured": [
+    {
+      "label": "Log query over 240,898 rows",
+      "value": "1.9 to 11.2 ms median (worker)",
+      "how": "performance.now() inside the worker, 6 queries x 12 runs, Chrome 154 on Apple M4"
+    },
+    {
+      "label": "Frames over 20 ms during scripted interaction",
+      "value": "0 of 931",
+      "how": "rAF deltas while wheel-zooming, shift-panning and sweeping the crosshair over the full 28h range with 7 charts (60 Hz headless cap)"
+    },
+    {
+      "label": "Chart draw cost per frame",
+      "value": "median 1.2 ms, p95 8.1 ms",
+      "how": "performance.now() around the shared flush that draws all dirty charts, same run"
+    },
+    {
+      "label": "Decimation of one 100,806-point series",
+      "value": "median 0.1 ms (to 2,402 points)",
+      "how": "300 runs of minMaxBucket in the page; Chrome timer resolution is 0.1 ms"
+    },
+    {
+      "label": "Simulator boot",
+      "value": "about 340 ms",
+      "how": "worker-side timing of generating 6.4M metric samples and 240k log rows"
+    }
+  ]
+}

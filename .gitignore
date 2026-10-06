@@ -1,0 +1,11 @@
+node_modules
+dist
+*.tsbuildinfo
+.DS_Store
+*.log
+storybook-static
+.env
+.env.*
+cypress/videos
+cypress/screenshots
+.netlify

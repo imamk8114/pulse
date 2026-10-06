@@ -1,0 +1,29 @@
+{
+  "name": "pulse",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A live observability and incident console running on a deterministic simulated backend in a Web Worker.",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --port 5185 --strictPort",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview --port 5185 --strictPort",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "e2e": "node e2e/mission.mjs",
+    "measure": "node e2e/measure.mjs"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.3.4",
+    "playwright-core": "^1.63.0",
+    "typescript": "^5.6.3",
+    "vite": "^5.4.11",
+    "vitest": "^2.1.8"
+  }
+}
